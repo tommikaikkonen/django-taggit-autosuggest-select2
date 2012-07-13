@@ -43,10 +43,11 @@ class TagAutoSuggest(forms.TextInput):
                         ajax: {
                             url: '%(url)s',
                             dataType: 'json',
+                            quietMillis: 400,
                             data: function (term, page) {
                                 return {
                                     q: term,
-                                    limit: page
+                                    limit: %(retrieve_limit)s
                                 };
                             },
                             results: function (data, page) {
@@ -58,17 +59,14 @@ class TagAutoSuggest(forms.TextInput):
                                 return object.name;
                             else
                                 return object.text;
-                            //return {id:object.value, text: object.name};
                         },
                         formatSelection: function (object) {
                             if (object.name)
                                 return object.name;
                             else
                                 return object.text;
-                            //return {id:object.value, text: object.name};
                         },
                         createSearchChoice: function(term, data) {
-                            console.log(term);
                             if (data.length !== 0) {
                                 if ($(data).filter(function() {
                                     var item;
@@ -78,17 +76,16 @@ class TagAutoSuggest(forms.TextInput):
                                         item = this.text
                                     return item.localeCompare(term) === 0;
                                 }).length===0) {
-                                    var retval = {id: 1, text: term}
-                                    console.log(retval);
+                                    var retval = {id: term, text: term}
                                     return retval;
                                 }
                             }
-                            var retval = {id: 1, text: term}
-                            console.log(retval);
+                            var retval = {id: term, text: term}
                             return retval;
                         }
                     });
 
+                    /*
                     $('.as-selections').addClass('vTextField');
                     $('ul.as-selections li.as-original input').addClass('vTextField');
 
@@ -97,6 +94,7 @@ class TagAutoSuggest(forms.TextInput):
                         $("#%(widget_id)s").remove();
                         $("#%(result_id)s").val(tags_as_string);
                     });
+                    */
                 });
             })(jQuery || django.jQuery);
             </script>""" % {
