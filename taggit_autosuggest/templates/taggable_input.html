@@ -1,0 +1,65 @@
+<script type="text/javascript">
+(function ($) {
+
+    $(document).ready(function (){
+
+        $("#{{ widget_id }}").select2({
+            tags: [],
+            placeholder: '{{ start_text }}',
+            minimumInputLength: 3,
+            ajax: {
+                url: '{{ url }}',
+                dataType: 'json',
+                quietMillis: 400,
+                data: function (term, page) {
+                    return {
+                        q: term,
+                        limit: {{ retrieve_limit }}
+                    };
+                },
+                results: function (data, page) {
+                    return {results: data};
+                }
+            },
+            formatResult: function (object) {
+                if (object.name)
+                    return object.name;
+                else
+                    return object.text;
+            },
+            formatSelection: function (object) {
+                if (object.name)
+                    return object.name;
+                else
+                    return object.text;
+            },
+            createSearchChoice: function(term, data) {
+                if (data.length !== 0) {
+                    if ($(data).filter(function() {
+                        var item;
+                        if (this.name)
+                            item = this.name
+                        else
+                            item = this.text
+                        return item.localeCompare(term) === 0;
+                    }).length===0) {
+                        return {id: term, text: term};
+                    }
+                }
+                return {id: term, text: term};
+            }
+        });
+
+        /*
+        $('.as-selections').addClass('vTextField');
+        $('ul.as-selections li.as-original input').addClass('vTextField');
+
+        $('#{{ result_id }}').parents().find('form').submit(function (){
+            tags_as_string = $("#as-values-{{ widget_id }}").val();
+            $("#{{ widget_id }}").remove();
+            $("#{{ result_id }}").val(tags_as_string);
+        });
+        */
+    });
+})(jQuery || django.jQuery);
+</script>

@@ -3,6 +3,7 @@ import copy
 from django import forms
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -30,82 +31,17 @@ class TagAutoSuggest(forms.TextInput):
         widget_html = super(TagAutoSuggest, self).render(name, value,
             widget_attrs)
 
-        js = u"""
-            <script type="text/javascript">
-            (function ($) {
-
-                $(document).ready(function (){
-
-                    $("#%(widget_id)s").select2({
-                        tags: [],
-                        placeholder: '%(start_text)s',
-                        minimumInputLength: 3,
-                        ajax: {
-                            url: '%(url)s',
-                            dataType: 'json',
-                            quietMillis: 400,
-                            data: function (term, page) {
-                                return {
-                                    q: term,
-                                    limit: %(retrieve_limit)s
-                                };
-                            },
-                            results: function (data, page) {
-                                return {results: data};
-                            }
-                        },
-                        formatResult: function (object) {
-                            if (object.name)
-                                return object.name;
-                            else
-                                return object.text;
-                        },
-                        formatSelection: function (object) {
-                            if (object.name)
-                                return object.name;
-                            else
-                                return object.text;
-                        },
-                        createSearchChoice: function(term, data) {
-                            if (data.length !== 0) {
-                                if ($(data).filter(function() {
-                                    var item;
-                                    if (this.name)
-                                        item = this.name
-                                    else
-                                        item = this.text
-                                    return item.localeCompare(term) === 0;
-                                }).length===0) {
-                                    var retval = {id: term, text: term}
-                                    return retval;
-                                }
-                            }
-                            var retval = {id: term, text: term}
-                            return retval;
-                        }
-                    });
-
-                    /*
-                    $('.as-selections').addClass('vTextField');
-                    $('ul.as-selections li.as-original input').addClass('vTextField');
-
-                    $('#%(result_id)s').parents().find('form').submit(function (){
-                        tags_as_string = $("#as-values-%(widget_id)s").val();
-                        $("#%(widget_id)s").remove();
-                        $("#%(result_id)s").val(tags_as_string);
-                    });
-                    */
-                });
-            })(jQuery || django.jQuery);
-            </script>""" % {
-                'result_id': result_attrs['id'],
-                'widget_id': widget_attrs['id'],
-                'url': reverse('taggit_autosuggest-list'),
-                'start_text': _("Enter Tag Here"),
-                'empty_text': _("No Results"),
-                'limit_text': _('No More Selections Are Allowed'),
-                'retrieve_limit': MAX_SUGGESTIONS,
-            }
+        context = {
+            'result_id': result_attrs['id'],
+            'widget_id': widget_attrs['id'],
+            'url': reverse('taggit_autosuggest-list'),
+            'start_text': _("Enter Tag Here"),
+            'empty_text': _("No Results"),
+            'limit_text': _('No More Selections Are Allowed'),
+            'retrieve_limit': MAX_SUGGESTIONS,
+        }
+        js = render_to_string('taggable_input.html', context)
+        print "\n" + js + "\n"
         return result_html + widget_html + mark_safe(js)
 
     class Media:
