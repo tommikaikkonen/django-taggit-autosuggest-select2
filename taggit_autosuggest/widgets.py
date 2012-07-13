@@ -33,21 +33,60 @@ class TagAutoSuggest(forms.TextInput):
         js = u"""
             <script type="text/javascript">
             (function ($) {
-                var tags_as_string;
 
                 $(document).ready(function (){
-                    tags_as_string = $('#%(result_id)s').val();
 
-                    $("#%(widget_id)s").autoSuggest("%(url)s", {
-                        asHtmlID: "%(widget_id)s",
-                        startText: "%(start_text)s",
-                        emptyText: "%(empty_text)s",
-                        limitText: "%(limit_text)s",
-                        preFill: tags_as_string,
-                        queryParam: 'q',
-                        retrieveLimit: %(retrieve_limit)d,
-                        minChars: 1,
-                        neverSubmit: true
+                    $("#%(widget_id)s").select2({
+                        tags: [],
+                        placeholder: '%(start_text)s',
+                        minimumInputLength: 3,
+                        ajax: {
+                            url: '%(url)s',
+                            dataType: 'json',
+                            data: function (term, page) {
+                                return {
+                                    q: term,
+                                    limit: page
+                                };
+                            },
+                            results: function (data, page) {
+                                return {results: data};
+                            }
+                        },
+                        formatResult: function (object) {
+                            if (object.name)
+                                return object.name;
+                            else
+                                return object.text;
+                            //return {id:object.value, text: object.name};
+                        },
+                        formatSelection: function (object) {
+                            if (object.name)
+                                return object.name;
+                            else
+                                return object.text;
+                            //return {id:object.value, text: object.name};
+                        },
+                        createSearchChoice: function(term, data) {
+                            console.log(term);
+                            if (data.length !== 0) {
+                                if ($(data).filter(function() {
+                                    var item;
+                                    if (this.name)
+                                        item = this.name
+                                    else
+                                        item = this.text
+                                    return item.localeCompare(term) === 0;
+                                }).length===0) {
+                                    var retval = {id: 1, text: term}
+                                    console.log(retval);
+                                    return retval;
+                                }
+                            }
+                            var retval = {id: 1, text: term}
+                            console.log(retval);
+                            return retval;
+                        }
                     });
 
                     $('.as-selections').addClass('vTextField');
@@ -70,14 +109,14 @@ class TagAutoSuggest(forms.TextInput):
                 'retrieve_limit': MAX_SUGGESTIONS,
             }
         return result_html + widget_html + mark_safe(js)
-    
+
     class Media:
-        js_base_url = getattr(settings, 'TAGGIT_AUTOSUGGEST_STATIC_BASE_URL', '%sjquery-autosuggest' % settings.STATIC_URL)
-        css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_CSS_URL','%s/css/autoSuggest.css' % js_base_url)
-        js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%s/js/jquery.autoSuggest.js' % js_base_url)
+        js_base_url = getattr(settings, 'TAGGIT_AUTOSUGGEST_STATIC_BASE_URL', '%s' % settings.STATIC_URL)
+        css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_CSS_URL','%sjquery-autosuggest/css/autoSuggest.css' % js_base_url)
+        select2_css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%scss/select2.css' % js_base_url)
+        js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%sjquery-autosuggest/js/jquery.autoSuggest.js' % js_base_url)
+        select2_js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%sjs/libs/select2.min.js' % js_base_url)
         css = {
-            'all': (css_url,)
+            'all': (css_url, select2_css_url)
         }
-        js = (
-            js_url,
-        )
+        js = (js_url, select2_js_url)
