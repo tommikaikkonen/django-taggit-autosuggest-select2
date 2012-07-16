@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from taggit_autosuggest.utils import edit_string_for_tags
+from taggit_autosuggest_select2.utils import edit_string_for_tags
 
 
 MAX_SUGGESTIONS = getattr(settings, 'TAGGIT_AUTOSUGGEST_MAX_SUGGESTIONS', 20)
@@ -34,7 +34,7 @@ class TagAutoSuggest(forms.TextInput):
         context = {
             'result_id': result_attrs['id'],
             'widget_id': widget_attrs['id'],
-            'url': reverse('taggit_autosuggest-list'),
+            'url': reverse('taggit_autosuggest_select2-list'),
             'start_text': _("Enter Tag Here"),
             'empty_text': _("No Results"),
             'limit_text': _('No More Selections Are Allowed'),
@@ -46,11 +46,9 @@ class TagAutoSuggest(forms.TextInput):
 
     class Media:
         js_base_url = getattr(settings, 'TAGGIT_AUTOSUGGEST_STATIC_BASE_URL', '%s' % settings.STATIC_URL)
-        css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_CSS_URL','%sjquery-autosuggest/css/autoSuggest.css' % js_base_url)
         select2_css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%scss/select2.css' % js_base_url)
-        js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%sjquery-autosuggest/js/jquery.autoSuggest.js' % js_base_url)
         select2_js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_JS_URL','%sjs/libs/select2.min.js' % js_base_url)
         css = {
-            'all': (css_url, select2_css_url)
+            'all': (select2_css_url,)
         }
-        js = (js_url, select2_js_url)
+        js = (select2_js_url,)
