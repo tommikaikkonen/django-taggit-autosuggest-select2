@@ -41,7 +41,7 @@ class TagAutoSuggest(forms.TextInput):
             'retrieve_limit': MAX_SUGGESTIONS,
         }
         js = render_to_string('taggable_input.html', context)
-        print "\n" + js + "\n"
+
         return result_html + widget_html + mark_safe(js)
 
     class Media:
