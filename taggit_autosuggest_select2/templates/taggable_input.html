@@ -1,7 +1,9 @@
 <script type="text/javascript">
 (function ($) {
 
-    $(document).ready(function (){
+    var tags_as_string;
+
+    $(document).ready(function () {
 
         $("#{{ widget_id }}").select2({
             tags: [],
@@ -18,8 +20,19 @@
                     };
                 },
                 results: function (data, page) {
-                    return {results: data};
+                    var items = []
+                    $.each(data, function (index, value) {
+                        items.push({id: value.name, text: value.name});
+                    });
+                    return {results: items};
                 }
+            },
+            initSelection: function (element) {
+                var data = [];
+                $(element.val().split(",")).each(function () {
+                    data.push({id: this, text: this});
+                });
+                return data;
             },
             formatResult: function (object) {
                 if (object.name)
@@ -28,12 +41,14 @@
                     return object.text;
             },
             formatSelection: function (object) {
+                console.log(object);
                 if (object.name)
                     return object.name;
                 else
                     return object.text;
             },
             createSearchChoice: function(term, data) {
+                console.log(data);
                 if (data.length !== 0) {
                     if ($(data).filter(function() {
                         var item;
@@ -46,21 +61,17 @@
                         return {id: term, text: term};
                     }
                 }
+                console.log({id: term, text: term});
                 return {id: term, text: term};
             }
         });
 
+        tags_as_string = $('{{ widget_id }}').select2('val');
+
         $('#{{ result_id }}').parents().find('form').submit(function (){
-            tags_as_string = $("#{{ widget_id }} .select2-search-choice").val();
-            $("#{{ widget_id }}").remove();
+            tags_as_string = $("#{{ widget_id }}").select2('val');
             $("#{{ result_id }}").val(tags_as_string);
         });
-
-        /*
-        $('.as-selections').addClass('vTextField');
-        $('ul.as-selections li.as-original input').addClass('vTextField');
-
-        */
     });
 })(jQuery || django.jQuery);
 </script>
