@@ -50,15 +50,16 @@
             }
         });
 
+        $('#{{ result_id }}').parents().find('form').submit(function (){
+            tags_as_string = $("#{{ widget_id }} .select2-search-choice").val();
+            $("#{{ widget_id }}").remove();
+            $("#{{ result_id }}").val(tags_as_string);
+        });
+
         /*
         $('.as-selections').addClass('vTextField');
         $('ul.as-selections li.as-original input').addClass('vTextField');
 
-        $('#{{ result_id }}').parents().find('form').submit(function (){
-            tags_as_string = $("#as-values-{{ widget_id }}").val();
-            $("#{{ widget_id }}").remove();
-            $("#{{ result_id }}").val(tags_as_string);
-        });
         */
     });
 })(jQuery || django.jQuery);
