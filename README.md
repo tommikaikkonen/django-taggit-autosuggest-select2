@@ -22,7 +22,7 @@ This project is directly based on those projects:
      (r'^taggit_autosuggest_select2/', include('taggit_autosuggest_select2.urls')),
 
 
-## Settings ***
+## Settings
 * `TAGGIT_AUTOSUGGEST_SELECT2_STATIC_BASE_URL`
     Instead of collecting and serving the static files directly, you can
     also set this variable to your static base URL somewhere else.
@@ -33,9 +33,9 @@ This project is directly based on those projects:
 ## Usage
 * To enable autosuggesting Tags, just let the tagged model use `TaggableManager`:
 
-    from django.db import models
-    from taggit_autosuggest.managers import TaggableManager
+        from django.db import models
+        from taggit_autosuggest.managers import TaggableManager
 
-    class SomeModel(models.Model):
+        class SomeModel(models.Model):
 
-        tags = TaggableManager()
+            tags = TaggableManager()
