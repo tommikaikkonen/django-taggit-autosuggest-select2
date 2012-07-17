@@ -1,78 +1,75 @@
 <script type="text/javascript">
-(function ($) {
+$(function () {
+    var tagsAsString;
 
-    var tags_as_string;
-
-    $(document).ready(function () {
-
-        $("#{{ widget_id }}").select2({
-            tags: [],
-            placeholder: '{{ start_text }}',
-            minimumInputLength: 0,
-            ajax: {
-                url: '{{ url }}',
-                dataType: 'json',
-                quietMillis: 250,
-                data: function (term, page) {
-                    return {
-                        q: term,
-                        limit: {{ retrieve_limit }}
-                    };
-                },
-                results: function (data, page) {
-                    var items = []
-                    $.each(data, function (index, value) {
-                        items.push({id: value.name, text: value.name});
-                    });
-                    return {results: items};
-                }
+    $("#{{ widget_id }}").select2({
+        tags: [],
+        placeholder: '{{ start_text }}',
+        minimumInputLength: 1,
+        ajax: {
+            url: '{{ url }}',
+            dataType: 'json',
+            quietMillis: 250,
+            data: function (term, page) {
+                return {
+                    q: term,
+                    limit: {{ retrieve_limit }}
+                };
             },
-            initSelection: function (element) {
-                // Loads the tags from the hidden input field
-                var data = [];
-                $(element.val().split(",")).each(function () {
-                    data.push({id: this, text: this});
+            results: function (data, page) {
+                var items = []
+                $.each(data, function (index, value) {
+                    items.push({id: value.name, text: value.name});
                 });
-                return data;
-            },
-            formatResult: function (object) {
-                // Returns the display of the result in the dropdown
-                if (object.name)
-                    return object.name;
-                else
-                    return object.text;
-            },
-            formatSelection: function (object) {
-                // Returns the display of the selected tag in the field
-                if (object.name)
-                    return object.name;
-                else
-                    return object.text;
-            },
-            createSearchChoice: function(term, data) {
-                // Creates a tag if it isn't selected already or doesn't exist
-                if (data.length !== 0) {
-                    if ($(data).filter(function() {
-                        var item;
-                        if (this.name)
-                            item = this.name
-                        else
-                            item = this.text
-                        return item.localeCompare(term) === 0;
-                    }).length === 0) {
-                        return {id: term, text: term};
-                    }
-                }
-                return {id: term, text: term};
+                return {results: items};
             }
-        });
-
-        tags_as_string = $('{{ widget_id }}').select2('val');
-
-        $('#{{ result_id }}').parents().find('form').submit(function (){
-            tags_as_string = $("#{{ widget_id }}").select2('val');
-            $("#{{ result_id }}").val(tags_as_string);
-        });
+        },
+        initSelection: function (element) {
+            // Loads the tags from the hidden input field
+            var data = [];
+            var $input = $('#{{ result_id }}');
+            $($input.val().split(", ")).each(function () {
+                data.push({id: this, text: this});
+            });
+            return data;
+        },
+        formatResult: function (object) {
+            // Returns the display of the result in the dropdown
+            if (object.name)
+                return object.name;
+            else
+                return object.text;
+        },
+        formatSelection: function (object) {
+            // Returns the display of the selected tag in the field
+            if (object.name)
+                return object.name;
+            else
+                return object.text;
+        },
+        createSearchChoice: function(term, data) {
+            // Creates a tag if it isn't selected already or doesn't exist
+            if (data.length !== 0) {
+                if ($(data).filter(function() {
+                    var item;
+                    if (this.name)
+                        item = this.name
+                    else
+                        item = this.text
+                    return item.localeCompare(term) === 0;
+                }).length === 0) {
+                    return {id: term, text: term};
+                }
+            }
+            return {id: term, text: term};
+        }
     });
-})(jQuery || django.jQuery);
+
+    $('#{{ result_id }}').parents().find('form').submit(function (){
+        var tagList = $("#{{ widget_id }}").select2('val');
+        tagsAsString = tagList.join(", ");
+        $("#{{ result_id }}").val(tagsAsString);
+        $("#{{ widget_id }}").val(tagsAsString);
+    });
+});
 </script>
