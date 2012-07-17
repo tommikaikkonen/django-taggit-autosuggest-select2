@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from taggit_autosuggest_select2.utils import edit_string_for_tags
 
 
-MAX_SUGGESTIONS = getattr(settings, 'TAGGIT_AUTOSUGGEST_MAX_SUGGESTIONS', 20)
+MAX_SUGGESTIONS = getattr(settings, 'TAGGIT_AUTOSUGGEST_SELECT2_MAX_SUGGESTIONS', 20)
 
 
 class TagAutoSuggest(forms.TextInput):
@@ -52,7 +52,5 @@ class TagAutoSuggest(forms.TextInput):
         js_base_url = getattr(settings, 'TAGGIT_AUTOSUGGEST_SELECT2_STATIC_BASE_URL', '%s' % settings.STATIC_URL)
         select2_css_url = getattr(settings,'TAGGIT_AUTOSUGGEST_SELECT2_CSS_URL','%scss/select2.css' % js_base_url)
         select2_js_url = getattr(settings,'TAGGIT_AUTOSUGGEST_SELECT2_JS_URL','%sjs/select2.min.js' % js_base_url)
-        css = {
-            'all': (select2_css_url,)
-        }
+        css = {'all': (select2_css_url,)}
         js = (select2_js_url,)
