@@ -31,13 +31,17 @@ class TagAutoSuggest(forms.TextInput):
         widget_html = super(TagAutoSuggest, self).render(name, value,
             widget_attrs)
 
+        start_text = self.attrs.get('start_text') or _("Enter Tag Here")
+        empty_text = self.attrs.get('empty_text') or _("No Results")
+        limit_text = self.attrs.get('limit_text') or _('No More Selections Are Allowed')
+
         context = {
             'result_id': result_attrs['id'],
             'widget_id': widget_attrs['id'],
             'url': reverse('taggit_autosuggest_select2-list'),
-            'start_text': _("Enter Tag Here"),
-            'empty_text': _("No Results"),
-            'limit_text': _('No More Selections Are Allowed'),
+            'start_text': start_text,
+            'empty_text': empty_text,
+            'limit_text': limit_text,
             'retrieve_limit': MAX_SUGGESTIONS,
         }
         js = render_to_string('taggable_input.html', context)
