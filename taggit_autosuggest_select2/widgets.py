@@ -33,6 +33,7 @@ class TagAutoSuggest(forms.TextInput):
 
         start_text = self.attrs.get('start_text') or _("Enter Tag Here")
         empty_text = self.attrs.get('empty_text') or _("No Results")
+        prompt_text = self.attrs.get('prompt_text') or _("Enter a tag")
         limit_text = self.attrs.get('limit_text') or _('No More Selections Are Allowed')
 
         context = {
@@ -40,6 +41,7 @@ class TagAutoSuggest(forms.TextInput):
             'widget_id': widget_attrs['id'],
             'url': reverse('taggit_autosuggest_select2-list'),
             'start_text': start_text,
+            'prompt_text': prompt_text,
             'empty_text': empty_text,
             'limit_text': limit_text,
             'retrieve_limit': MAX_SUGGESTIONS,

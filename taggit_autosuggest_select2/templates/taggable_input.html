@@ -5,11 +5,11 @@ $(function () {
     $("#{{ widget_id }}").select2({
         tags: [],
         placeholder: '{{ start_text }}',
-        minimumInputLength: 1,
+        minimumInputLength: 3,
         ajax: {
             url: '{{ url }}',
             dataType: 'json',
-            quietMillis: 250,
+            quietMillis: 500,
             data: function (term, page) {
                 return {
                     q: term,
@@ -32,6 +32,9 @@ $(function () {
                 data.push({id: this, text: this});
             });
             return data;
+        },
+        formatInputTooShort: function (term, minLength) {
+            return "{{ prompt_text }}";
         },
         formatResult: function (object) {
             // Returns the display of the result in the dropdown
