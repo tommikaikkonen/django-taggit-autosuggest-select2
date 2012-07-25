@@ -25,3 +25,9 @@ def list_tags(request):
     data = [{'name': n, 'value': n} for n in tag_name_qs[:limit]]
 
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
+
+def list_all_tags(request):
+    """Returns all the tags in the database"""
+    all_tags = Tag.objects.all().values_list('name', flat=True)
+    return HttpResponse(json.dumps(list(all_tags)), mimetype='application/json')

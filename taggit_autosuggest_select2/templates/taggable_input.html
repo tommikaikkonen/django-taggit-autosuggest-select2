@@ -2,82 +2,76 @@
 $(function () {
     var tagsAsString;
 
-    $("#{{ widget_id }}").select2({
-        tags: [],
-        placeholder: '{{ start_text }}',
-        minimumInputLength: 3,
-        ajax: {
-            url: '{{ url }}',
-            dataType: 'json',
-            quietMillis: 500,
-            data: function (term, page) {
-                return {
-                    q: term,
-                    limit: {{ retrieve_limit }}
-                };
+    function loadSelect2(allTags) {
+        $("#{{ widget_id }}").select2({
+            tags: allTags,
+            placeholder: '{{ start_text }}',
+            minimumInputLength: 3,
+            initSelection: function (element) {
+                // Loads the tags from the hidden input field
+                var data = [];
+                var $input = $('#{{ result_id }}');
+                $($input.val().split(", ")).each(function () {
+                    data.push({id: this, text: this});
+                });
+                return data;
             },
-            results: function (data, page) {
-                var items = []
-                $.each(data, function (index, value) {
-                    items.push({id: value.name, text: value.name});
+            formatInputTooShort: function (term, minLength) {
+                return "{{ prompt_text }}";
+            },
+            formatResult: function (object) {
+                // Returns the display of the result in the dropdown
+                if (object.name)
+                    return object.name;
+                else
+                    return object.text;
+            },
+            formatSelection: function (object) {
+                // Returns the display of the selected tag in the field
+                if (object.name)
+                    return object.name;
+                else
+                    return object.text;
+            },
+            query: function (query) {
+                var term = query.term, filtered = {results: []};
+                $(allTags).each(function () {
+                    if (term === "" || query.matcher(term, this)) {
+                        filtered.results.push({id: this, text: this});
+                    }
                 });
-                return {results: items};
-            }
-        },
-        initSelection: function (element) {
-            // Loads the tags from the hidden input field
-            var data = [];
-            var $input = $('#{{ result_id }}');
-            $($input.val().split(", ")).each(function () {
-                data.push({id: this, text: this});
-            });
-            return data;
-        },
-        formatInputTooShort: function (term, minLength) {
-            return "{{ prompt_text }}";
-        },
-        formatResult: function (object) {
-            // Returns the display of the result in the dropdown
-            if (object.name)
-                return object.name;
-            else
-                return object.text;
-        },
-        formatSelection: function (object) {
-            // Returns the display of the selected tag in the field
-            if (object.name)
-                return object.name;
-            else
-                return object.text;
-        },
-        createSearchChoice: function(term, data) {
-            // Creates a tag if it isn't selected already or doesn't exist
-
-            if (data.length !== 0) {
-                var matched = $(data).filter(function() {
-                    var item;
-                    if (this.name)
-                        item = this.name.toLowerCase()
-                    else
-                        item = this.text.toLowerCase()
-                    return item.localeCompare(term.toLowerCase()) === 0;
-                });
-                if (matched.length === 0) {
-                    return {id: term, text: term};
+                query.callback(filtered);
+            },
+            createSearchChoice: function(term, data) {
+                // Creates a tag if it isn't selected already or doesn't exist
+                if (data.length !== 0) {
+                    var matched = $(data).filter(function() {
+                        var hasName = this.name !== undefined,
+                            tag = hasName ? this.name : this.text;
+                        tag = tag.toLowerCase()
+                        return tag.localeCompare(term.toLowerCase()) === 0;
+                    });
+                    if (matched.length === 0) {
+                        return {id: term, text: term};
+                    }
+                    else // return the first matched item
+                        return matched[0];
+                } // check to see whether the tag might be selected already
+                else {
+                    var selected = $('#{{ widget_id }}').select2('val');
+                    var matched = $(selected).filter(function () {
+                        var tag = this.toLowerCase()
+                        return tag.localeCompare(term.toLowerCase()) === 0;
+                    });
+                    if (matched.length === 0)
+                        return {id: term, text: term};
                 }
-                else // return the first matched item
-                    return matched[0];
             }
-            else { // check to see whether the tag might be selected already
-                var selected = $('#{{ widget_id }}').select2('val');
-                var matched = $(selected).filter(function () {
-                    var this_lower = this.toLowerCase()
-                    return this_lower.localeCompare(term.toLowerCase()) === 0;
-                });
-                if (matched.length === 0)
-                    return {id: term, text: term};
-            }
-        }
+        });
+    }
+
+    $.get('{{ url }}', function (data) {
+        loadSelect2(data);
     });
 
     $('#{{ result_id }}').parents().find('form').submit(function (){

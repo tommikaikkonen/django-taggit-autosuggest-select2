@@ -23,13 +23,14 @@ class TagAutoSuggest(forms.TextInput):
 
         result_attrs = copy.copy(attrs)
         result_attrs['type'] = 'hidden'
-        result_html = super(TagAutoSuggest, self).render(name, value,
-            result_attrs)
-
+        result_html = super(TagAutoSuggest, self).render(name,
+                                                         value,
+                                                         result_attrs)
         widget_attrs = copy.copy(attrs)
         widget_attrs['id'] += '__tagautosuggest'
-        widget_html = super(TagAutoSuggest, self).render(name, value,
-            widget_attrs)
+        widget_html = super(TagAutoSuggest, self).render(name,
+                                                         value,
+                                                         widget_attrs)
 
         start_text = self.attrs.get('start_text') or _("Enter Tag Here")
         empty_text = self.attrs.get('empty_text') or _("No Results")
@@ -39,7 +40,7 @@ class TagAutoSuggest(forms.TextInput):
         context = {
             'result_id': result_attrs['id'],
             'widget_id': widget_attrs['id'],
-            'url': reverse('taggit_autosuggest_select2-list'),
+            'url': reverse('taggit_autosuggest_select2-list-all'),
             'start_text': start_text,
             'prompt_text': prompt_text,
             'empty_text': empty_text,
