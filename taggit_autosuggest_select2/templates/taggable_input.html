@@ -52,19 +52,31 @@ $(function () {
         },
         createSearchChoice: function(term, data) {
             // Creates a tag if it isn't selected already or doesn't exist
+
             if (data.length !== 0) {
-                if ($(data).filter(function() {
+                var matched = $(data).filter(function() {
                     var item;
                     if (this.name)
-                        item = this.name
+                        item = this.name.toLowerCase()
                     else
-                        item = this.text
-                    return item.localeCompare(term) === 0;
-                }).length === 0) {
+                        item = this.text.toLowerCase()
+                    return item.localeCompare(term.toLowerCase()) === 0;
+                });
+                if (matched.length === 0) {
                     return {id: term, text: term};
                 }
+                else // return the first matched item
+                    return matched[0];
             }
-            return {id: term, text: term};
+            else { // check to see whether the tag might be selected already
+                var selected = $('#{{ widget_id }}').select2('val');
+                var matched = $(selected).filter(function () {
+                    var this_lower = this.toLowerCase()
+                    return this_lower.localeCompare(term.toLowerCase()) === 0;
+                });
+                if (matched.length === 0)
+                    return {id: term, text: term};
+            }
         }
     });
 
