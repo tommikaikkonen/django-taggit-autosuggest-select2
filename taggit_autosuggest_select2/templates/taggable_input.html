@@ -7,40 +7,31 @@ $(function () {
             tags: allTags,
             placeholder: '{{ start_text }}',
             minimumInputLength: 3,
-            initSelection: function (element) {
+            initSelection: function (element, callback) {
                 // Loads the tags from the hidden input field
                 var data = [];
                 var $input = $('#{{ result_id }}');
                 $($input.val().split(", ")).each(function () {
                     data.push({id: this, text: this});
                 });
-                return data;
+                callback(data);
             },
             formatInputTooShort: function (term, minLength) {
                 return "{{ prompt_text }}";
             },
-            formatResult: function (object) {
+            formatResult: function (object, container, query) {
                 // Returns the display of the result in the dropdown
                 if (object.name)
                     return object.name;
                 else
                     return object.text;
             },
-            formatSelection: function (object) {
+            formatSelection: function (object, container) {
                 // Returns the display of the selected tag in the field
                 if (object.name)
                     return object.name;
                 else
                     return object.text;
-            },
-            query: function (query) {
-                var term = query.term, filtered = {results: []};
-                $(allTags).each(function () {
-                    if (term === "" || query.matcher(term, this)) {
-                        filtered.results.push({id: this, text: this});
-                    }
-                });
-                query.callback(filtered);
             },
             createSearchChoice: function(term, data) {
                 // Creates a tag if it isn't selected already or doesn't exist
@@ -66,7 +57,8 @@ $(function () {
                     if (matched.length === 0)
                         return {id: term, text: term};
                 }
-            }
+            },
+            tokenSeparators: [',', ]
         });
     }
 
