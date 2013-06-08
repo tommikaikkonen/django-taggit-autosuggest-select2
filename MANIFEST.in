@@ -1,4 +1,4 @@
-include LICENSE.txt
+include LICENSE
 include MANIFEST.in
 include README.md
 recursive-include taggit_autosuggest_select2/static *
