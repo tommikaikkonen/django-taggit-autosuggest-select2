@@ -6,7 +6,7 @@ $(function () {
         $("#{{ widget_id }}").select2({
             tags: allTags,
             placeholder: '{{ start_text }}',
-            minimumInputLength: 3,
+            minimumInputLength: 1,
             initSelection: function (element, callback) {
                 // Loads the tags from the hidden input field
                 var data = [];
