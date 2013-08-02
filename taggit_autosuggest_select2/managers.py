@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext_lazy as _
+from django.utils.text import capfirst
 from taggit.forms import TagField
 from taggit.managers import TaggableManager as BaseTaggableManager
 from taggit_autosuggest_select2.widgets import TagAutoSuggest
